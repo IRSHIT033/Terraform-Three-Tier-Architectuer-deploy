@@ -1,4 +1,4 @@
-Deploy Three Tier Architecture In Terraform
+### Deploy Three Tier Architecture In Terraform
 
 # step 1:
 
