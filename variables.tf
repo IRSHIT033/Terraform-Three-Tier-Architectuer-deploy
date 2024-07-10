@@ -64,7 +64,7 @@ variable "ssh-locate" {
 
 ## DB Instance    ##
 variable "database-instance-class" {
-  default     = "db.t2.micro"
+  default     = "db.t3.micro"
   description = "The Database Instance type"
   type        = string
 }

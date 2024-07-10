@@ -15,6 +15,21 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
+resource "aws_key_pair" "terraform_key" {
+  key_name           = "tf_key"
+  public_key = tls_private_key.rsa.public_key_openssh
+}
+
+resource "tls_private_key" "rsa" {
+  algorithm = "RSA"
+  rsa_bits = 4096
+}
+
+resource "local_file" "terraform_key_local_file" {
+  content=tls_private_key.rsa.private_key_pem
+  filename = "tfkey"
+}
+
 ###    Ec2 Instance Web Tier   ###
 
 resource "aws_instance" "ec2_public_web" {
@@ -22,7 +37,7 @@ resource "aws_instance" "ec2_public_web" {
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public-web-subnet-1.id
   vpc_security_group_ids = [aws_security_group.webserver-security-group.id]
-  key_name               = "source_key"
+  key_name               = aws_key_pair.terraform_key.key_name
 
   tags = {
     Name = "web-asg"
@@ -36,7 +51,7 @@ resource "aws_instance" "ec2_private_app" {
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.private-app-subnet-1.id
   vpc_security_group_ids = [aws_security_group.ssh-security-group.id]
-
+  key_name               = aws_key_pair.terraform_key.key_name
   tags = {
     Name = "app-asg"
   }
